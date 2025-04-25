@@ -4,12 +4,10 @@ import 'package:green_plate/core/constants/colors/my_colors.dart';
 
 class HomeHeader extends StatelessWidget {
   final String username;
-  final String imageUrl;
 
   const HomeHeader({
     super.key,
     required this.username,
-    required this.imageUrl,
   });
 
   @override
@@ -38,17 +36,7 @@ class HomeHeader extends StatelessWidget {
             ),
           ],
         ),
-        Container(
-          height: 40.h,
-          width: 40.w,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+        Icon(Icons.account_circle_rounded, size: 35.sp)
       ],
     );
   }

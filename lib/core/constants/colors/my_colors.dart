@@ -17,4 +17,6 @@ class MyColors {
     Colors.teal.shade100,
   ];
   static Color unSelectedColor = Colors.grey.shade200;
+  static final recipeBoxColor = Colors.grey[200];
+  static Color urlColor = Colors.blue;
 }

@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
 
 class RecipeSearchTextfield extends StatelessWidget {
-  const RecipeSearchTextfield({super.key});
+  final Widget widget;
+  const RecipeSearchTextfield({super.key, required this.widget});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide:  BorderSide(color: MyColors.blackColor),
+    return InkWell(
+      onTap: () {
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(builder: (context) => widget),
+        );
+      },
+      child: Container(
+        height: 55.h,
+        padding: EdgeInsets.only(left: 20.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: MyColors.shadowColor,
+          ),
         ),
-        prefixIcon: const Icon(Icons.search),
-        hintText: "Search recipe",
+        child: Center(
+          child: Row(
+            spacing: 20.w,
+            children: [Icon(Icons.search), Text("Search dishes")],
+          ),
+        ),
       ),
     );
   }

@@ -4,7 +4,8 @@ import 'package:green_plate/core/constants/assets/asset_helper.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
 
 class HomeBanner extends StatelessWidget {
-  const HomeBanner({super.key});
+  final Function()? onTap;
+  const HomeBanner({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +47,40 @@ class HomeBanner extends StatelessWidget {
                   height: 1.3,
                 ),
               ),
-              Container(
-                height: 40.h,
-                width: 120.w,
-                decoration: BoxDecoration(
-                  color: MyColors.whiteColor,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: MyColors.shadowColor,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Try",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: MyColors.primaryColor,
-                        ),
-                      ),
-                      SizedBox(width: 6.w),
-                      Icon(
-                        Icons.arrow_forward_outlined,
-                        color: MyColors.primaryColor,
+              InkWell(
+                onTap: onTap,
+                child: Container(
+                  height: 40.h,
+                  width: 120.w,
+                  decoration: BoxDecoration(
+                    color: MyColors.whiteColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: MyColors.shadowColor,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
                     ],
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Try",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: MyColors.primaryColor,
+                          ),
+                        ),
+                        SizedBox(width: 6.w),
+                        Icon(
+                          Icons.arrow_forward_outlined,
+                          color: MyColors.primaryColor,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
