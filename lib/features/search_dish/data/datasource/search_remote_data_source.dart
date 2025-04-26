@@ -1,8 +1,51 @@
-import 'dart:convert';
+// import 'dart:convert';
+// import 'package:green_plate/core/error/app_exception.dart';
+// import 'package:green_plate/core/model/recipe_model.dart';
+// import 'package:http/http.dart' as http show Client;
 
+// abstract interface class SearchRemoteDataSource {
+//   Future<List<RecipeModel>> searchDish(String query);
+// }
+
+// class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
+//   final http.Client client;
+//   final String baseUrl;
+//   final String apiKey;
+
+//   SearchRemoteDataSourceImpl({
+//     required this.client,
+//     required this.baseUrl,
+//     required this.apiKey,
+//   });
+
+//   @override
+//   Future<List<RecipeModel>> searchDish(String query) async {
+//     try {
+//       final response = await client.get(
+//         Uri.parse(
+//           "$baseUrl/recipes/complexSearch?query=$query&maxFat=25&number=2&apiKey=$apiKey",
+//         ),
+//       );
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body) as Map<String, dynamic>;
+//         final results = data['results'] as List<dynamic>;
+//         return results
+//             .map((e) => RecipeModel.fromJson(e as Map<String, dynamic>))
+//             .toList();
+//       } else {
+//         throw ServerException('Failed to load recipes: ${response.statusCode}');
+//       }
+//     } on ServerException catch (e) {
+//       throw ServerException(e.message);
+//     } catch (e, st) {
+//       throw ServerException(e.toString(), st);
+//     }
+//   }
+// }
+import 'dart:convert';
 import 'package:green_plate/core/error/app_exception.dart';
 import 'package:green_plate/core/model/recipe_model.dart';
-import 'package:http/http.dart' as http show Client;
+import 'package:http/http.dart' as http;
 
 abstract interface class SearchRemoteDataSource {
   Future<List<RecipeModel>> searchDish(String query);
@@ -10,8 +53,8 @@ abstract interface class SearchRemoteDataSource {
 
 class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   final http.Client client;
-  final String baseUrl; // Should be "https://api.spoonacular.com"
-  final String apiKey; // Ensure this is valid
+  final String baseUrl;
+  final String apiKey;
 
   SearchRemoteDataSourceImpl({
     required this.client,
@@ -22,69 +65,34 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   @override
   Future<List<RecipeModel>> searchDish(String query) async {
     try {
-      // 1. Construct the URL properly using Uri.https()
+      final encodedQuery = Uri.encodeQueryComponent(query);
+      final authority = baseUrl
+          .replaceAll(RegExp(r'https?://'), '')
+          .replaceAll(RegExp(r'/.*'), '');
       final uri = Uri.https(
-        "api.spoonacular.com", // authority
-        "/recipes/complexSearch", // path
+        authority,
+        '/recipes/complexSearch',
         {
-          // query parameters
-          "query": query,
-          "apiKey": apiKey,
-          "number": "10", // limit results
+          'apiKey': apiKey,
+          'query': encodedQuery,
+          'maxFat': '25',
+          'number': '2',
         },
       );
-
-      print("Making request to: ${uri.toString()}");
-
-      // 2. Make the request
       final response = await client.get(uri);
-
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-
-      // 3. Handle the response
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        final results =
-            data['results'] as List<dynamic>; // Now 'results' is defined
-
+        final results = data['results'] as List<dynamic>;
         return results
             .map((e) => RecipeModel.fromJson(e as Map<String, dynamic>))
             .toList();
       } else {
         throw ServerException(
-          'API Error ${response.statusCode}: ${response.body}',
+          'API Error (${response.statusCode}): ${response.body}',
         );
       }
     } catch (e, st) {
-      print("Full error details: $e");
-      print("Stack trace: $st");
-      throw ServerException('Search failed: $e', st);
+      throw ServerException('Search failed: ${e.toString()}', st);
     }
   }
-  // @override
-  // Future<List<RecipeModel>> searchDish(String query) async {
-  //   try {
-  //     // Construct the correct URL (with /recipes/complexSearch)
-  //     final uri = Uri.parse(
-  //       "$baseUrl/recipes/complexSearch?query=$query&apiKey=$apiKey",
-  //     );
-
-  //     final response = await client.get(uri);
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body) as Map<String, dynamic>;
-  //       final results = data['results'] as List<dynamic>;
-  //       return results
-  //           .map((e) => RecipeModel.fromJson(e as Map<String, dynamic>))
-  //           .toList();
-  //     } else {
-  //       throw ServerException(
-  //         'Failed to load recipes (HTTP ${response.statusCode}): ${response.body}',
-  //       );
-  //     }
-  //   } catch (e, st) {
-  //     throw ServerException('Search failed: $e', st);
-  //   }
-  // }
 }

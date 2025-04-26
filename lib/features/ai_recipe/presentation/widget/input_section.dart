@@ -6,12 +6,14 @@ class InputSection extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onPressed;
+  final VoidCallback onPressToGetRecipe;
   
   const InputSection({
     super.key,
     required this.controller,
     required this.focusNode,
     required this.onPressed,
+    required this.onPressToGetRecipe,
   });
 
   @override
@@ -72,7 +74,7 @@ class InputSection extends StatelessWidget {
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              onPressed: onPressed,
+              onPressed: onPressToGetRecipe,
               icon: Icon(
                 Icons.send,
                 color: MyColors.whiteColor,

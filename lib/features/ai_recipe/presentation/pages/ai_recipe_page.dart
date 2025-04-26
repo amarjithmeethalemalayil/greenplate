@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
+import 'package:green_plate/core/route/recipe_detail_view_page_navigator.dart';
 import 'package:green_plate/core/widgets/common_app_bar.dart';
+import 'package:green_plate/features/ai_recipe/presentation/bloc/ai_recipe_bloc.dart';
+import 'package:green_plate/features/ai_recipe/presentation/cubit/ai_recipe_list_cubit.dart';
 import 'package:green_plate/features/ai_recipe/presentation/widget/empty_list_text.dart';
 import 'package:green_plate/features/ai_recipe/presentation/widget/input_section.dart';
+import 'package:green_plate/features/recipe_detail_view/presentation/pages/recipe_detail_view_page.dart';
 
 class AiRecipePage extends StatefulWidget {
   const AiRecipePage({super.key});
@@ -14,9 +19,7 @@ class AiRecipePage extends StatefulWidget {
 
 class _AiRecipePageState extends State<AiRecipePage> {
   final _listController = TextEditingController();
-  final List<Map<String, dynamic>> _ingredients = [];
   final FocusNode _focusNode = FocusNode();
-
 
   @override
   void dispose() {
@@ -25,29 +28,14 @@ class _AiRecipePageState extends State<AiRecipePage> {
     super.dispose();
   }
 
-  Color _getRandomColor() {
-    final random = DateTime.now().millisecond % MyColors.aiListRandomColors.length;
-    return MyColors.aiListRandomColors[random];
-  }
-
   void _addIngredient() {
-    final text = _listController.text.trim();
-    if (text.isNotEmpty && !_ingredients.any((item) => item['name'] == text)) {
-      setState(() {
-        _ingredients.add({
-          'name': text,
-          'color': _getRandomColor(),
-        });
-        _listController.clear();
-      });
-      _focusNode.requestFocus();
-    }
+    context.read<AiRecipeListCubit>().addIngredient(_listController.text);
+    _listController.clear();
+    _focusNode.requestFocus();
   }
 
   void _removeIngredient(int index) {
-    setState(() {
-      _ingredients.removeAt(index);
-    });
+    context.read<AiRecipeListCubit>().removeIngredient(index);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Ingredient removed'),
@@ -56,50 +44,95 @@ class _AiRecipePageState extends State<AiRecipePage> {
     );
   }
 
+  void _fetchRecipe() {
+    final ingredientState = context.read<AiRecipeListCubit>().state;
+    if (ingredientState is AiRecipeListLoaded) {
+      final ingredients =
+          ingredientState.ingredients.map((e) => e['name'] as String).toList();
+      context.read<AiRecipeBloc>().add(FetchAiRecipeEvent(ingredients));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(title: "Create Recipe"),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-        child: Column(
-          children: [
-            if (_ingredients.isNotEmpty)
-              Expanded(
-                child: Center(
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 10.w,
-                    runSpacing: 10.h,
-                    children: _ingredients.map((ingredient) {
-                      return Chip(
-                        backgroundColor: ingredient['color'],
-                        label: Text(ingredient['name']),
-                        deleteIcon: Icon(Icons.close, size: 16.sp),
-                        onDeleted: () {
-                          _removeIngredient(_ingredients.indexOf(ingredient));
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.r),
+      body: BlocConsumer<AiRecipeBloc, AiRecipeState>(
+        listener: (context, state) {
+          if (state is AiRecipeLoaded) {
+            RecipeDetailViewPageNavigator.navigateWithPopupAnimation(
+              context,
+              RecipeDetailViewPage(
+                id: state.aiRecipe.id.toString(),
+              ),
+            );
+          }
+          if (state is AiRecipeError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is AiRecipeLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+            child: Column(
+              children: [
+                BlocBuilder<AiRecipeListCubit, AiRecipeListState>(
+                  builder: (context, state) {
+                    return switch (state) {
+                      AiRecipeListInitial() => const EmptyListText(),
+                      AiRecipeListLoaded(ingredients: final ingredients) =>
+                        Expanded(
+                          child: Center(
+                            child: Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 10.w,
+                              runSpacing: 10.h,
+                              children: ingredients.map((ingredient) {
+                                return Chip(
+                                  backgroundColor: ingredient['color'],
+                                  label: Text(ingredient['name']),
+                                  deleteIcon: Icon(Icons.close, size: 16.sp),
+                                  onDeleted: () {
+                                    _removeIngredient(
+                                        ingredients.indexOf(ingredient));
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  labelStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: MyColors.blackColor,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         ),
-                        labelStyle: TextStyle(
-                          fontSize: 14.sp,
-                          color: MyColors.blackColor
+                      AiRecipeListError(message: final message) => Text(
+                          message,
+                          style: TextStyle(color: MyColors.errorColor),
                         ),
-                      );
-                    }).toList(),
-                  ),
+                    };
+                  },
                 ),
-              )
-            else
-              EmptyListText(),
-            InputSection(
-              controller: _listController,
-              focusNode: _focusNode,
-              onPressed: _addIngredient,
+                InputSection(
+                  controller: _listController,
+                  focusNode: _focusNode,
+                  onPressed: _addIngredient,
+                  onPressToGetRecipe: _fetchRecipe,
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

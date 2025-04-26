@@ -3,6 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/constants/environment/environments.dart';
+import 'package:green_plate/features/ai_recipe/data/datasource/ai_recipe_generator_remote_data_source.dart';
+import 'package:green_plate/features/ai_recipe/data/repository/ai_recipe_repository_impl.dart';
+import 'package:green_plate/features/ai_recipe/domain/usecase/get_ai_recipe.dart';
+import 'package:green_plate/features/ai_recipe/presentation/bloc/ai_recipe_bloc.dart';
+import 'package:green_plate/features/ai_recipe/presentation/cubit/ai_recipe_list_cubit.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:green_plate/features/bottom_nav/presentation/pages/bottom_nav.dart';
 import 'package:green_plate/features/home/data/datasources/recipe_remote_data_source.dart';
@@ -72,6 +77,20 @@ class MyApp extends StatelessWidget {
                 searchDish: SearchDish(
                   SearchRecipeRepositoryImpl(
                     SearchRemoteDataSourceImpl(
+                      client: client,
+                      baseUrl: Environments.baseUrl,
+                      apiKey: apiKey!,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            BlocProvider(create: (context) => AiRecipeListCubit()),
+            BlocProvider(
+              create: (context) => AiRecipeBloc(
+                GetAiRecipe(
+                  AiRecipeRepositoryImpl(
+                    AiRecipeGeneratorRemoteDataSourceImpl(
                       client: client,
                       baseUrl: Environments.baseUrl,
                       apiKey: apiKey!,
