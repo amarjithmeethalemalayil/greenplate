@@ -4,10 +4,12 @@ import 'package:green_plate/core/constants/colors/my_colors.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final List<Widget>? actions;
 
   const CommonAppBar({
     super.key,
     required this.title,
+    this.actions,
   });
 
   @override
@@ -24,6 +26,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       backgroundColor: MyColors.whiteColor,
       elevation: 0,
+      actions: actions,
     );
   }
 

@@ -8,3 +8,13 @@ class FetchDetailRecipeEvent extends DetailRecipeEvent {
 
   FetchDetailRecipeEvent(this.id);
 }
+
+class SaveRecipeToFirebase extends DetailRecipeEvent {
+  final RecipeEntity recipe;
+  final RecipeDetailEntity recipeDetailEntity;
+
+  SaveRecipeToFirebase({
+    required this.recipe,
+    required this.recipeDetailEntity,
+  });
+}

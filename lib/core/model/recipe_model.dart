@@ -16,4 +16,12 @@ class RecipeModel extends RecipeEntity {
       readyInMinutes: json['readyInMinutes'] ?? 0,
     );
   }
+  static RecipeModel fromEntity(RecipeEntity entity) {
+    return RecipeModel(
+      id: entity.id,
+      title: entity.title,
+      imageUrl: entity.imageUrl,
+      readyInMinutes: entity.readyInMinutes,
+    );
+  }
 }

@@ -121,7 +121,6 @@ class _HomePageState extends State<HomePage>
                                 recipeName: recipe.title,
                                 imagePath: recipe.imageUrl,
                                 time: '${recipe.readyInMinutes}',
-                                isSaved: false,
                               ),
                             ),
                           );

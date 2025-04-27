@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,6 +12,11 @@ import 'package:green_plate/features/ai_recipe/presentation/bloc/ai_recipe_bloc.
 import 'package:green_plate/features/ai_recipe/presentation/cubit/ai_recipe_list_cubit.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:green_plate/features/bottom_nav/presentation/pages/bottom_nav.dart';
+import 'package:green_plate/features/favourite/data/datasource/fetch_fav_recipes_remote_data_source.dart';
+import 'package:green_plate/features/favourite/data/repository/fetch_fav_recipes_repository_impl.dart';
+import 'package:green_plate/features/favourite/domain/usecase/delete_fav_recipe.dart';
+import 'package:green_plate/features/favourite/domain/usecase/fetch_fav_recipes.dart';
+import 'package:green_plate/features/favourite/presentation/bloc/fav_recipes_bloc.dart';
 import 'package:green_plate/features/home/data/datasources/recipe_remote_data_source.dart';
 import 'package:green_plate/features/home/data/repository/recipe_repository_impl.dart';
 import 'package:green_plate/features/home/domain/usecases/get_recipes.dart';
@@ -18,15 +25,21 @@ import 'package:green_plate/features/home/presentation/cubit/tab_bar_cubit.dart'
 import 'package:green_plate/features/recipe_detail_view/data/datasources/detail_recipe_remote_data_source.dart';
 import 'package:green_plate/features/recipe_detail_view/data/repository/fetch_detail_recipe_repository_impl.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/usecase/get_datail_recipe.dart';
+import 'package:green_plate/features/recipe_detail_view/domain/usecase/is_saved_in_firebase.dart';
+import 'package:green_plate/features/recipe_detail_view/domain/usecase/save_recipe.dart';
 import 'package:green_plate/features/recipe_detail_view/presentation/bloc/detail_recipe_bloc.dart';
 import 'package:green_plate/features/search_dish/data/datasource/search_remote_data_source.dart';
 import 'package:green_plate/features/search_dish/data/repository/search_recipe_repository_impl.dart';
 import 'package:green_plate/features/search_dish/domain/usecase/search_dish.dart';
 import 'package:green_plate/features/search_dish/presentation/bloc/search_recipe_bloc.dart';
+import 'package:green_plate/firebase_options.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
@@ -38,6 +51,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final client = http.Client();
     final apiKey = dotenv.env['APIKEY'];
+    final db = FirebaseFirestore.instance;
     return ScreenUtilInit(
       designSize: const Size(375.0, 812.0),
       minTextAdapt: true,
@@ -67,6 +81,27 @@ class MyApp extends StatelessWidget {
                       client: client,
                       baseUrl: Environments.baseUrl,
                       apiKey: apiKey!,
+                      db: db,
+                    ),
+                  ),
+                ),
+                SaveRecipe(
+                  FetchDetailRecipeRepositoryImpl(
+                    DetailRecipeRemoteDataSourceImpl(
+                      client: client,
+                      baseUrl: Environments.baseUrl,
+                      apiKey: apiKey,
+                      db: db,
+                    ),
+                  ),
+                ),
+                IsSavedInFirebase(
+                  FetchDetailRecipeRepositoryImpl(
+                    DetailRecipeRemoteDataSourceImpl(
+                      client: client,
+                      baseUrl: Environments.baseUrl,
+                      apiKey: apiKey,
+                      db: db,
                     ),
                   ),
                 ),
@@ -99,6 +134,24 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
+            BlocProvider(
+              create: (context) => FavRecipesBloc(
+                FetchFavRecipes(
+                  FetchFavRecipesRepositoryImpl(
+                    FetchFavRecipesRemoteDataSourceImpl(
+                      db: db,
+                    ),
+                  ),
+                ),
+                DeleteFavRecipe(
+                  FetchFavRecipesRepositoryImpl(
+                    FetchFavRecipesRemoteDataSourceImpl(
+                      db: db,
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
           child: MaterialApp(
             title: 'Green Plate',

@@ -6,7 +6,6 @@ class RecipeBox extends StatelessWidget {
   final String recipeName;
   final String imagePath;
   final String time;
-  final bool isSaved;
   final Function()? onTap;
 
   const RecipeBox({
@@ -14,7 +13,6 @@ class RecipeBox extends StatelessWidget {
     required this.recipeName,
     required this.imagePath,
     required this.time,
-    required this.isSaved,
     this.onTap,
   });
 
@@ -66,27 +64,11 @@ class RecipeBox extends StatelessWidget {
                         color: MyColors.shadowColor,
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "$time min",
-                          style: TextStyle(
-                            color: MyColors.blackColor,
-                          ),
-                        ),
-                        CircleAvatar(
-                          radius: 12.r,
-                          backgroundColor: isSaved
-                              ? MyColors.primaryColor
-                              : MyColors.whiteColor,
-                          child: Icon(
-                            isSaved ? Icons.bookmark : Icons.bookmark_border,
-                            size: 14.sp,
-                            color: MyColors.blackColor,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "$time min",
+                      style: TextStyle(
+                        color: MyColors.blackColor,
+                      ),
                     ),
                   ],
                 ),

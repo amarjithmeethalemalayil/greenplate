@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
 import 'package:green_plate/core/route/recipe_detail_view_page_navigator.dart';
 import 'package:green_plate/core/widgets/common_app_bar.dart';
+import 'package:green_plate/core/widgets/common_loading.dart';
 import 'package:green_plate/features/ai_recipe/presentation/bloc/ai_recipe_bloc.dart';
 import 'package:green_plate/features/ai_recipe/presentation/cubit/ai_recipe_list_cubit.dart';
 import 'package:green_plate/features/ai_recipe/presentation/widget/empty_list_text.dart';
@@ -75,11 +76,8 @@ class _AiRecipePageState extends State<AiRecipePage> {
         },
         builder: (context, state) {
           if (state is AiRecipeLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return CommonLoading();
           }
-
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
             child: Column(
@@ -102,7 +100,8 @@ class _AiRecipePageState extends State<AiRecipePage> {
                                   deleteIcon: Icon(Icons.close, size: 16.sp),
                                   onDeleted: () {
                                     _removeIngredient(
-                                        ingredients.indexOf(ingredient));
+                                      ingredients.indexOf(ingredient),
+                                    );
                                   },
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.r),

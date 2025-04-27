@@ -69,7 +69,7 @@ class RecipeDetailsSection extends StatelessWidget {
         ),
         RecipeDetailRowItems(
           purpose: "Price Per Serving: ",
-          value: "\$${recipeDetailEntity.pricePerServing}",
+          value: "\Rs.${recipeDetailEntity.pricePerServing}",
         ),
       ],
     );

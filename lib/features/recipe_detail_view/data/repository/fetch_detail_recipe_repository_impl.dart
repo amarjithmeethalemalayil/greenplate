@@ -1,6 +1,8 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:green_plate/core/entity/recipe_entity.dart';
 import 'package:green_plate/core/error/failures.dart';
 import 'package:green_plate/core/error/app_exception.dart';
+import 'package:green_plate/core/model/recipe_model.dart';
 import 'package:green_plate/features/recipe_detail_view/data/datasources/detail_recipe_remote_data_source.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/entity/recipe_detail_entity.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/repository/fetch_detail_recipe_repository.dart';
@@ -12,10 +14,38 @@ class FetchDetailRecipeRepositoryImpl implements FetchDetailRecipeRepository {
 
   @override
   Future<Either<Failure, RecipeDetailEntity>> fetchDetailRecipe(
-      String id) async {
+    String id,
+  ) async {
     try {
       final result = await remoteDataSource.fetchRecipes(id);
       return right(result);
+    } on ServerException catch (e) {
+      return left(ServerFailure(e.message));
+    } catch (e) {
+      return left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> saveRecipeToFirebase(
+    RecipeEntity recipe,
+  ) async {
+    final _recipe = RecipeModel.fromEntity(recipe);
+    try {
+      final res = await remoteDataSource.saveRecipeToFIrestore(_recipe);
+      return right(res);
+    } on ServerException catch (e) {
+      return left(ServerFailure(e.message));
+    } catch (e) {
+      return left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> isRecipeSavedInFirebase(String id) async {
+    try {
+      final isSaved = await remoteDataSource.isRecipeSavedInFirebase(id);
+      return right(isSaved);
     } on ServerException catch (e) {
       return left(ServerFailure(e.message));
     } catch (e) {

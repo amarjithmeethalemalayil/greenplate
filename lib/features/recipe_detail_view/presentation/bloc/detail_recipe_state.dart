@@ -9,8 +9,18 @@ class DetailRecipeLoading extends DetailRecipeState {}
 
 class DetailRecipeLoaded extends DetailRecipeState {
   final RecipeDetailEntity recipe;
+  final bool isSaved;
+  DetailRecipeLoaded(
+    this.recipe,
+    this.isSaved,
+  );
+}
 
-  DetailRecipeLoaded(this.recipe);
+class RecipeSavedToFirebase extends DetailRecipeState {
+  final bool isSaved;
+  final RecipeDetailEntity recipeDetailEntity;
+
+  RecipeSavedToFirebase(this.isSaved, this.recipeDetailEntity);
 }
 
 class DetailRecipeError extends DetailRecipeState {
