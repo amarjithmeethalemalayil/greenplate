@@ -12,3 +12,11 @@ class ServerException extends AppException {
 class CacheException extends AppException {
   const CacheException(super.message, [super.stackTrace]);
 }
+
+class WrongCredentialsException extends AppException {
+  const WrongCredentialsException(super.message, [super.stackTrace]);
+}
+
+class EmailAlreadyInUseException extends AppException {
+  const EmailAlreadyInUseException(super.message, [super.stackTrace]);
+}

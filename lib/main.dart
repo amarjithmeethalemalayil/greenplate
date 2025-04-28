@@ -1,17 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green_plate/core/app/data/datasource/login_check_local_data_source.dart';
+import 'package:green_plate/core/app/data/repository/login_check_repository_impl.dart';
+import 'package:green_plate/core/app/domain/usecase/check_login_status.dart';
+import 'package:green_plate/core/app/presentation/cubit/login_decision_cubit.dart';
+import 'package:green_plate/core/app/presentation/page/login_decision_page.dart';
 import 'package:green_plate/core/constants/environment/environments.dart';
+import 'package:green_plate/core/service/local_data_service.dart';
 import 'package:green_plate/features/ai_recipe/data/datasource/ai_recipe_generator_remote_data_source.dart';
 import 'package:green_plate/features/ai_recipe/data/repository/ai_recipe_repository_impl.dart';
 import 'package:green_plate/features/ai_recipe/domain/usecase/get_ai_recipe.dart';
 import 'package:green_plate/features/ai_recipe/presentation/bloc/ai_recipe_bloc.dart';
 import 'package:green_plate/features/ai_recipe/presentation/cubit/ai_recipe_list_cubit.dart';
+import 'package:green_plate/features/auth/data/datasource/auth_local_data_source.dart';
+import 'package:green_plate/features/auth/data/datasource/auth_remote_data_source.dart';
+import 'package:green_plate/features/auth/data/repository/auth_repository_impl.dart';
+import 'package:green_plate/features/auth/domain/usecases/log_in.dart';
+import 'package:green_plate/features/auth/domain/usecases/save_user.dart';
+import 'package:green_plate/features/auth/domain/usecases/sign_up.dart';
+import 'package:green_plate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:green_plate/features/auth/presentation/pages/login_page.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
-import 'package:green_plate/features/bottom_nav/presentation/pages/bottom_nav.dart';
 import 'package:green_plate/features/favourite/data/datasource/fetch_fav_recipes_remote_data_source.dart';
 import 'package:green_plate/features/favourite/data/repository/fetch_fav_recipes_repository_impl.dart';
 import 'package:green_plate/features/favourite/domain/usecase/delete_fav_recipe.dart';
@@ -52,6 +66,7 @@ class MyApp extends StatelessWidget {
     final client = http.Client();
     final apiKey = dotenv.env['APIKEY'];
     final db = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
     return ScreenUtilInit(
       designSize: const Size(375.0, 812.0),
       minTextAdapt: true,
@@ -151,7 +166,40 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
               ),
-            )
+            ),
+            BlocProvider(
+              create: (context) => AuthBloc(
+                logIn: LogIn(
+                  AuthRepositoryImpl(
+                    AuthRemoteDataSourceImpl(auth, db),
+                    AuthLocalDataSourceImpl(LocalDataService()),
+                  ),
+                ),
+                signUp: SignUp(
+                  AuthRepositoryImpl(
+                    AuthRemoteDataSourceImpl(auth, db),
+                    AuthLocalDataSourceImpl(LocalDataService()),
+                  ),
+                ),
+                saveUser: SaveUser(
+                  AuthRepositoryImpl(
+                    AuthRemoteDataSourceImpl(auth, db),
+                    AuthLocalDataSourceImpl(LocalDataService()),
+                  ),
+                ),
+              ),
+            ),
+            BlocProvider(
+              create: (context) => LoginDecisionCubit(
+                CheckLoginStatus(
+                  LoginCheckRepositoryImpl(
+                    LoginCheckLocalDataSourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
           child: MaterialApp(
             title: 'Green Plate',
@@ -160,7 +208,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: BottomNav(),
+            home: LoginDecisionPage(),
           ),
         );
       },

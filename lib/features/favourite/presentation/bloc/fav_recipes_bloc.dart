@@ -25,17 +25,13 @@ class FavRecipesBloc extends Bloc<FavRecipesEvent, FavRecipesState> {
     });
 
     on<DeleteFavRecipeEvent>((event, emit) async {
-      try {
-        emit(FavRecipesLoading());
-        await deleteFavRecipe(event.docId);
-        final result = await fetchFavRecipes();
-        result.fold(
-          (failure) => emit(FavRecipesError(failure.message)),
-          (recipes) => emit(FavRecipesLoaded(recipes)),
-        );
-      } catch (e) {
-        emit(FavRecipesError('Failed to delete the recipe: $e'));
-      }
+      emit(FavRecipesLoading());
+      await deleteFavRecipe(event.docId);
+      final result = await fetchFavRecipes();
+      result.fold(
+        (failure) => emit(FavRecipesError(failure.message)),
+        (recipes) => emit(FavRecipesLoaded(recipes)),
+      );
     });
   }
 }
