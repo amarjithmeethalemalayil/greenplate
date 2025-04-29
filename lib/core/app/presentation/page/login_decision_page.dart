@@ -18,7 +18,7 @@ class LoginDecisionPage extends StatelessWidget {
             return BottomNav();
           } else if (state is LoginDecisionInitial) {
             return LoginPage();
-          }else if (state is LoginDecisionError) {
+          } else if (state is LoginDecisionError) {
             return ErrorPage(errorMessage: state.error);
           } else {
             return Center(child: CircularProgressIndicator());

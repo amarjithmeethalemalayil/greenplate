@@ -1,72 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:green_plate/core/constants/colors/my_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/widgets/common_app_bar.dart';
+import 'package:green_plate/features/donate/presentation/cubit/donate_tabbar_cubit.dart';
+import 'package:green_plate/features/donate/presentation/pages/accept_donation_page.dart';
+import 'package:green_plate/features/donate/presentation/pages/donation_page.dart';
+import 'package:green_plate/features/donate/presentation/widget/custom_tabbar.dart';
 
-class DonatePage extends StatefulWidget {
+class DonatePage extends StatelessWidget {
   const DonatePage({super.key});
-
-  @override
-  State<DonatePage> createState() => _DonatePageState();
-}
-
-class _DonatePageState extends State<DonatePage> {
-  int selectedIndex = 0;
-  final tabs = ["Donate", "Donations"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(title: "Donate"),
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              decoration: BoxDecoration(
-                color: MyColors.unSelectedColor,
-                borderRadius: BorderRadius.circular(30),
+      body: BlocBuilder<DonateTabbarCubit, DonateTabbarState>(
+        builder: (context, state) {
+          if (state is DonateTabbarInitial) {
+            return Padding(
+              padding:  EdgeInsets.symmetric(
+                horizontal: 20.w,
+                vertical: 20.h
               ),
-              child: Row(
-                children: List.generate(tabs.length, (index) {
-                  final isSelected = selectedIndex == index;
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    CustomTabBar(
+                      tabs: state.tabs,
+                      selectedIndex: state.selectedIndex,
+                      onTabChanged: (index) {
+                        context.read<DonateTabbarCubit>().changeTab(index);
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: isSelected ? MyColors.primaryColor : MyColors.transparentColor,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              tabs[index],
-                              style: TextStyle(
-                                color: isSelected ? MyColors.whiteColor : MyColors.blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
-                  );
-                }),
+                     SizedBox(height: 20.h),
+                    IndexedStack(
+                      index: state.selectedIndex,
+                      children: [
+                        DonationPage(),
+                        AcceptDonationPage(),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 40),
-          Center(
-            child: Text("${tabs[selectedIndex]} Page"),
-          ),
-        ],
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }

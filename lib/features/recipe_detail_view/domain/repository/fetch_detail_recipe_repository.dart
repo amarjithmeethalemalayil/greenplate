@@ -5,6 +5,10 @@ import 'package:green_plate/features/recipe_detail_view/domain/entity/recipe_det
 
 abstract interface class FetchDetailRecipeRepository {
   Future<Either<Failure, RecipeDetailEntity>> fetchDetailRecipe(String id);
-  Future<Either<Failure, bool>> saveRecipeToFirebase(RecipeEntity recipe);
-  Future<Either<Failure, bool>> isRecipeSavedInFirebase(String id);
+  Future<Either<Failure, bool>> saveRecipeToFirebase(
+    RecipeEntity recipe,
+    String userId,
+  );
+  Future<Either<Failure, bool>> isRecipeSavedInFirebase(String id,String userId);
+  Future<Either<Failure, String>> getUserId();
 }

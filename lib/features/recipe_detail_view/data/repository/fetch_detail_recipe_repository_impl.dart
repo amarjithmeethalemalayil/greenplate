@@ -4,13 +4,16 @@ import 'package:green_plate/core/error/failures.dart';
 import 'package:green_plate/core/error/app_exception.dart';
 import 'package:green_plate/core/model/recipe_model.dart';
 import 'package:green_plate/features/recipe_detail_view/data/datasources/detail_recipe_remote_data_source.dart';
+import 'package:green_plate/features/recipe_detail_view/data/datasources/fetch_userid_local_datasource.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/entity/recipe_detail_entity.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/repository/fetch_detail_recipe_repository.dart';
 
 class FetchDetailRecipeRepositoryImpl implements FetchDetailRecipeRepository {
   final DetailRecipeRemoteDataSource remoteDataSource;
+  final FetchUseridLocalDatasource fetchUseridLocalDatasource;
 
-  FetchDetailRecipeRepositoryImpl(this.remoteDataSource);
+  FetchDetailRecipeRepositoryImpl(
+      this.remoteDataSource, this.fetchUseridLocalDatasource);
 
   @override
   Future<Either<Failure, RecipeDetailEntity>> fetchDetailRecipe(
@@ -29,10 +32,11 @@ class FetchDetailRecipeRepositoryImpl implements FetchDetailRecipeRepository {
   @override
   Future<Either<Failure, bool>> saveRecipeToFirebase(
     RecipeEntity recipe,
+    String userId,
   ) async {
     final _recipe = RecipeModel.fromEntity(recipe);
     try {
-      final res = await remoteDataSource.saveRecipeToFIrestore(_recipe);
+      final res = await remoteDataSource.saveRecipeToFIrestore(_recipe, userId);
       return right(res);
     } on ServerException catch (e) {
       return left(ServerFailure(e.message));
@@ -42,14 +46,24 @@ class FetchDetailRecipeRepositoryImpl implements FetchDetailRecipeRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> isRecipeSavedInFirebase(String id) async {
+  Future<Either<Failure, bool>> isRecipeSavedInFirebase(String id,String userId) async {
     try {
-      final isSaved = await remoteDataSource.isRecipeSavedInFirebase(id);
+      final isSaved = await remoteDataSource.isRecipeSavedInFirebase(id,userId);
       return right(isSaved);
     } on ServerException catch (e) {
       return left(ServerFailure(e.message));
     } catch (e) {
       return left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> getUserId() async {
+    try {
+      final name = await fetchUseridLocalDatasource.fetchUserId();
+      return right(name);
+    } catch (e, st) {
+      return left(UnknownFailure(e.toString(), st));
     }
   }
 }

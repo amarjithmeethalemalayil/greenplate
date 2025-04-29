@@ -8,3 +8,6 @@ class FetchRecipes extends RecipeEvent {
 
   FetchRecipes(this.category);
 }
+
+class FetcUserhName extends RecipeEvent{}
+

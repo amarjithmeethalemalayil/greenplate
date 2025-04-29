@@ -1,4 +1,4 @@
-import 'package:green_plate/features/auth/domain/entity/user_entity.dart';
+import 'package:green_plate/core/entity/user_entity.dart';
 import 'package:green_plate/features/auth/domain/repository/auth_repository.dart';
 
 class SaveUser {

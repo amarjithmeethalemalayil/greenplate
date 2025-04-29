@@ -70,7 +70,16 @@ class _HomePageState extends State<HomePage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HomeHeader(username: "Amar"),
+              BlocBuilder<RecipeBloc, RecipeState>(
+                builder: (context, state) {
+                  if(state is NameFetched){
+                    return HomeHeader(username: state.name);
+                  } else if(state is RecipeLoading){
+                    return HomeHeader(username: "Loading");
+                  }
+                  return HomeHeader(username: "Amar");
+                },
+              ),
               SizedBox(height: 30.h),
               RecipeSearchTextfield(widget: SearchPage()),
               SizedBox(height: 20.h),

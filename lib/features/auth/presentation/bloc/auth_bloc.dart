@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:green_plate/features/auth/domain/entity/user_entity.dart';
+import 'package:green_plate/core/entity/user_entity.dart';
 import 'package:green_plate/features/auth/domain/usecases/log_in.dart';
 import 'package:green_plate/features/auth/domain/usecases/save_user.dart';
 import 'package:green_plate/features/auth/domain/usecases/sign_up.dart';

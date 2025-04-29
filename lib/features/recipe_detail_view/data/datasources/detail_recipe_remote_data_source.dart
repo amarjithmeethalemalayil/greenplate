@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:green_plate/core/constants/keys/keys.dart';
 import 'package:green_plate/core/error/app_exception.dart';
 import 'package:green_plate/core/model/recipe_model.dart';
 import 'package:green_plate/features/recipe_detail_view/data/model/recipe_detail_model.dart';
@@ -7,8 +9,8 @@ import 'package:http/http.dart' as http;
 
 abstract interface class DetailRecipeRemoteDataSource {
   Future<RecipeDetailModel> fetchRecipes(String id);
-  Future<bool> saveRecipeToFIrestore(RecipeModel recipe);
-  Future<bool> isRecipeSavedInFirebase(String id);
+  Future<bool> saveRecipeToFIrestore(RecipeModel recipe, String userId);
+  Future<bool> isRecipeSavedInFirebase(String id, String userId);
 }
 
 class DetailRecipeRemoteDataSourceImpl implements DetailRecipeRemoteDataSource {
@@ -16,12 +18,14 @@ class DetailRecipeRemoteDataSourceImpl implements DetailRecipeRemoteDataSource {
   final String baseUrl;
   final String apiKey;
   final FirebaseFirestore db;
+  final FirebaseAuth auth;
 
   DetailRecipeRemoteDataSourceImpl({
     required this.client,
     required this.baseUrl,
     required this.apiKey,
     required this.db,
+    required this.auth,
   });
 
   @override
@@ -44,11 +48,20 @@ class DetailRecipeRemoteDataSourceImpl implements DetailRecipeRemoteDataSource {
   }
 
   @override
-  Future<bool> saveRecipeToFIrestore(RecipeModel recipe) async {
+  Future<bool> saveRecipeToFIrestore(RecipeModel recipe, String userId) async {
     try {
+      final userDocId = userId == 'unknown' ? auth.currentUser?.uid : userId;
+      if (userDocId == null || userDocId.isEmpty) {
+        return false;
+      }
       final recipeJson = recipe.toJson();
       final docId = recipe.id.toString();
-      await db.collection('recipes').doc(docId).set(recipeJson);
+      await db
+          .collection(Keys.accountsCollection)
+          .doc(userDocId)
+          .collection(Keys.recipeCollection)
+          .doc(docId)
+          .set(recipeJson);
       return true;
     } on FirebaseException catch (e) {
       throw ServerException('Failed to save recipe to Firestore: ${e.message}');
@@ -61,9 +74,14 @@ class DetailRecipeRemoteDataSourceImpl implements DetailRecipeRemoteDataSource {
   }
 
   @override
-  Future<bool> isRecipeSavedInFirebase(String id) async {
+  Future<bool> isRecipeSavedInFirebase(String id, String userId) async {
     try {
-      final docSnapshot = await db.collection('recipes').doc(id).get();
+      final docSnapshot = await db
+          .collection(Keys.accountsCollection)
+          .doc(userId)
+          .collection(Keys.recipeCollection)
+          .doc(id)
+          .get();
       return docSnapshot.exists;
     } on FirebaseException catch (e) {
       throw ServerException(

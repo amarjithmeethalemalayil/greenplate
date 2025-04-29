@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:green_plate/core/constants/keys/keys.dart';
 import 'package:green_plate/core/error/app_exception.dart';
-import 'package:green_plate/features/auth/data/model/user_model.dart';
+import 'package:green_plate/core/model/user_model.dart';
 
 abstract interface class AuthRemoteDataSource {
   Future<UserModel> signIn({required String email, required String password});

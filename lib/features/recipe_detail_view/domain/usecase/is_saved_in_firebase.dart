@@ -7,7 +7,7 @@ class IsSavedInFirebase {
 
   IsSavedInFirebase(this.repository);
 
-  Future<Either<Failure, bool>> call(String id) async {
-    return await repository.isRecipeSavedInFirebase(id);
+  Future<Either<Failure, bool>> call(String id,String userId) async {
+    return await repository.isRecipeSavedInFirebase(id,userId);
   }
 }

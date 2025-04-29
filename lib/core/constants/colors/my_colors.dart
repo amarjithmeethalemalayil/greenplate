@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyColors {
-  static Color blackColor = Colors.black;
+  static const Color blackColor = Colors.black;
   static final highLightTextColor = Colors.grey[400];
   static final bannerCardListColor = [Color(0xFF72C59D), Color(0xFF56A88A)];
   static Color whiteColor = Colors.white;
@@ -20,4 +20,8 @@ class MyColors {
   static final recipeBoxColor = Colors.grey[200];
   static Color urlColor = Colors.blue;
   static Color errorColor = Colors.red;
+  static final donationMealSelectingBgBox = Colors.green.shade50; 
+  static final infoTextColor = Colors.orange.shade800;
+  static const Color orangeColor = Colors.orange;
+  static final infoBoxColor = Colors.orange.shade100;
 }

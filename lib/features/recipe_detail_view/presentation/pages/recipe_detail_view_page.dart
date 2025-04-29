@@ -103,6 +103,7 @@ class RecipeDetailViewPage extends StatelessWidget {
                     SaveRecipeToFirebase(
                       recipe: recipe,
                       recipeDetailEntity: recipeDetailEntity,
+                      userId: state.userId,
                     ),
                   );
             },

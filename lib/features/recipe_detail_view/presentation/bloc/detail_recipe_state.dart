@@ -10,9 +10,11 @@ class DetailRecipeLoading extends DetailRecipeState {}
 class DetailRecipeLoaded extends DetailRecipeState {
   final RecipeDetailEntity recipe;
   final bool isSaved;
+  final String userId;
   DetailRecipeLoaded(
     this.recipe,
     this.isSaved,
+    this.userId,
   );
 }
 

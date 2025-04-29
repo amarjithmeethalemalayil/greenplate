@@ -14,6 +14,12 @@ final class RecipeLoaded extends RecipeState {
   const RecipeLoaded(this.recipes);
 }
 
+final class NameFetched extends RecipeState {
+  final String name;
+
+  NameFetched(this.name);
+}
+
 final class RecipeError extends RecipeState {
   final String message;
 

@@ -3,8 +3,8 @@ import 'package:green_plate/core/error/app_exception.dart';
 import 'package:green_plate/core/error/failures.dart';
 import 'package:green_plate/features/auth/data/datasource/auth_local_data_source.dart';
 import 'package:green_plate/features/auth/data/datasource/auth_remote_data_source.dart';
-import 'package:green_plate/features/auth/data/model/user_model.dart';
-import 'package:green_plate/features/auth/domain/entity/user_entity.dart';
+import 'package:green_plate/core/model/user_model.dart';
+import 'package:green_plate/core/entity/user_entity.dart';
 import 'package:green_plate/features/auth/domain/repository/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {

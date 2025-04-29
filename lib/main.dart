@@ -24,20 +24,24 @@ import 'package:green_plate/features/auth/domain/usecases/log_in.dart';
 import 'package:green_plate/features/auth/domain/usecases/save_user.dart';
 import 'package:green_plate/features/auth/domain/usecases/sign_up.dart';
 import 'package:green_plate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:green_plate/features/auth/presentation/pages/login_page.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
+import 'package:green_plate/features/donate/presentation/cubit/donate_tabbar_cubit.dart';
 import 'package:green_plate/features/favourite/data/datasource/fetch_fav_recipes_remote_data_source.dart';
 import 'package:green_plate/features/favourite/data/repository/fetch_fav_recipes_repository_impl.dart';
 import 'package:green_plate/features/favourite/domain/usecase/delete_fav_recipe.dart';
 import 'package:green_plate/features/favourite/domain/usecase/fetch_fav_recipes.dart';
 import 'package:green_plate/features/favourite/presentation/bloc/fav_recipes_bloc.dart';
+import 'package:green_plate/features/home/data/datasources/fetch_name_local_datasource.dart';
 import 'package:green_plate/features/home/data/datasources/recipe_remote_data_source.dart';
 import 'package:green_plate/features/home/data/repository/recipe_repository_impl.dart';
+import 'package:green_plate/features/home/domain/usecases/fetch_name.dart';
 import 'package:green_plate/features/home/domain/usecases/get_recipes.dart';
 import 'package:green_plate/features/home/presentation/bloc/recipe_bloc.dart';
 import 'package:green_plate/features/home/presentation/cubit/tab_bar_cubit.dart';
 import 'package:green_plate/features/recipe_detail_view/data/datasources/detail_recipe_remote_data_source.dart';
+import 'package:green_plate/features/recipe_detail_view/data/datasources/fetch_userid_local_datasource.dart';
 import 'package:green_plate/features/recipe_detail_view/data/repository/fetch_detail_recipe_repository_impl.dart';
+import 'package:green_plate/features/recipe_detail_view/domain/usecase/fetch_userid.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/usecase/get_datail_recipe.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/usecase/is_saved_in_firebase.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/usecase/save_recipe.dart';
@@ -84,6 +88,21 @@ class MyApp extends StatelessWidget {
                       baseUrl: Environments.baseUrl,
                       apiKey: apiKey!,
                     ),
+                    FetchNameLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                fetchName: FetchName(
+                  RecipeRepositoryImpl(
+                    RecipeRemoteDataSourceImpl(
+                      client: client,
+                      baseUrl: Environments.baseUrl,
+                      apiKey: apiKey,
+                    ),
+                    FetchNameLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
                   ),
                 ),
               ),
@@ -97,6 +116,10 @@ class MyApp extends StatelessWidget {
                       baseUrl: Environments.baseUrl,
                       apiKey: apiKey!,
                       db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
                     ),
                   ),
                 ),
@@ -107,6 +130,10 @@ class MyApp extends StatelessWidget {
                       baseUrl: Environments.baseUrl,
                       apiKey: apiKey,
                       db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
                     ),
                   ),
                 ),
@@ -117,6 +144,24 @@ class MyApp extends StatelessWidget {
                       baseUrl: Environments.baseUrl,
                       apiKey: apiKey,
                       db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                FetchUserId(
+                  FetchDetailRecipeRepositoryImpl(
+                    DetailRecipeRemoteDataSourceImpl(
+                      client: client,
+                      baseUrl: Environments.baseUrl,
+                      apiKey: apiKey,
+                      db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
                     ),
                   ),
                 ),
@@ -200,6 +245,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
+            BlocProvider(create: (context) => DonateTabbarCubit()),
           ],
           child: MaterialApp(
             title: 'Green Plate',
