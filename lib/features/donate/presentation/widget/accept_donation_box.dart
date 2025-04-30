@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:green_plate/core/constants/assets/asset_helper.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
+import 'package:green_plate/features/donate/presentation/widget/donation_page_btn.dart';
 
 class AcceptDonationBox extends StatelessWidget {
-  const AcceptDonationBox({super.key});
+  final String mealTypeName;
+  final String donatorName;
+  final String nameOfTheFood;
+  final String distance;
+
+  const AcceptDonationBox({
+    super.key,
+    required this.mealTypeName,
+    required this.donatorName,
+    required this.nameOfTheFood,
+    required this.distance,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,87 +26,113 @@ class AcceptDonationBox extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.r),
         ),
-        elevation: 4,
+        elevation: 6,
+        shadowColor: MyColors.highLightTextColor,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: 10.w,
+            horizontal: 15.w,
             vertical: 20.h,
           ),
           child: Column(
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    height: 100.h,
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      image: DecorationImage(
-                        image: AssetImage(AssetHelper.homeBannerImage),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Food Type: Lunch",
+                          "Meal Type: $mealTypeName",
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: MyColors.blackColor,
                           ),
                         ),
-                        SizedBox(height: 6.h),
+                        SizedBox(height: 8.h),
                         Text(
-                          "Food Name: Vegetable Rice",
+                          "Name of the donator: $donatorName",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                           style: TextStyle(
-                            fontSize: 13.sp,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
                             color: MyColors.blackColor,
                           ),
                         ),
                         SizedBox(height: 6.h),
                         Text(
-                          "Donated by: John Doe",
+                          "Food Name: $nameOfTheFood",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                           style: TextStyle(
-                            fontSize: 13.sp,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
                             color: MyColors.blackColor,
                           ),
                         ),
+                        SizedBox(height: 10.h),
+                        Text(
+                          "view all details",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: MyColors.blackColor,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
                       ],
                     ),
                   ),
+                  SizedBox(width: 10.w),
+                  _buildLocationSeation(distance),
                 ],
               ),
-              SizedBox(height: 16.h),
-              SizedBox(
-                width: double.infinity,
-                height: 45.h,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MyColors.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  child: Text(
-                    "Interest",
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      color: MyColors.whiteColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              )
+              SizedBox(height: 20.h),
+              DonationPageBtn(
+                buttonName: "Interest",
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLocationSeation(String distance) {
+    return Column(
+      spacing: 8.h,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: MyColors.whiteColor,
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: [
+              BoxShadow(
+                color: MyColors.shadowColor,
+                blurRadius: 4,
+                offset: Offset(2, 2),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.all(10.sp),
+          child: Icon(
+            Icons.location_on,
+            size: 30.sp,
+            color: MyColors.urlColor,
+          ),
+        ),
+        Text(
+          "$distance Km",
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: MyColors.blackColor,
+          ),
+        ),
+      ],
     );
   }
 }

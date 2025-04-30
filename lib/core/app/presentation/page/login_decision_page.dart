@@ -16,7 +16,7 @@ class LoginDecisionPage extends StatelessWidget {
         builder: (context, state) {
           if (state is AlreadyLoggedIn) {
             return BottomNav();
-          } else if (state is LoginDecisionInitial) {
+          } else if (state is NotLoggedIn) {
             return LoginPage();
           } else if (state is LoginDecisionError) {
             return ErrorPage(errorMessage: state.error);

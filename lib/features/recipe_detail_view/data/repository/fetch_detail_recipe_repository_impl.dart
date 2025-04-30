@@ -4,7 +4,7 @@ import 'package:green_plate/core/error/failures.dart';
 import 'package:green_plate/core/error/app_exception.dart';
 import 'package:green_plate/core/model/recipe_model.dart';
 import 'package:green_plate/features/recipe_detail_view/data/datasources/detail_recipe_remote_data_source.dart';
-import 'package:green_plate/features/recipe_detail_view/data/datasources/fetch_userid_local_datasource.dart';
+import 'package:green_plate/core/datasource/fetch_userid_local_datasource.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/entity/recipe_detail_entity.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/repository/fetch_detail_recipe_repository.dart';
 

@@ -76,6 +76,10 @@ class DetailRecipeRemoteDataSourceImpl implements DetailRecipeRemoteDataSource {
   @override
   Future<bool> isRecipeSavedInFirebase(String id, String userId) async {
     try {
+      final userDocId = userId == 'unknown' ? auth.currentUser?.uid : userId;
+      if (userDocId == null || userDocId.isEmpty) {
+        return false;
+      }
       final docSnapshot = await db
           .collection(Keys.accountsCollection)
           .doc(userId)

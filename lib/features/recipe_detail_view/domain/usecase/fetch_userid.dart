@@ -7,7 +7,7 @@ class FetchUserId {
 
   FetchUserId(this.repository);
 
-    Future<Either<Failure, String>> call() async {
+  Future<Either<Failure, String>> call() async {
     return await repository.getUserId();
   }
 }

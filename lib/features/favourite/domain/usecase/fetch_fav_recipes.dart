@@ -7,7 +7,7 @@ class FetchFavRecipes {
   final FetchFavRecipesRepository favRecipesRepository;
   FetchFavRecipes(this.favRecipesRepository);
 
-  Future<Either<Failure, List<RecipeEntity>>> call() async {
-    return favRecipesRepository.fetchFavouriteRecipes();
+  Future<Either<Failure, List<RecipeEntity>>> call(String userId) async {
+    return favRecipesRepository.fetchFavouriteRecipes(userId);
   }
 }

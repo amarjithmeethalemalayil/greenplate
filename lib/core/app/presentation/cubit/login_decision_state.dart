@@ -5,6 +5,8 @@ sealed class LoginDecisionState {}
 
 final class LoginDecisionInitial extends LoginDecisionState {}
 
+class NotLoggedIn extends LoginDecisionState{}
+
 class AlreadyLoggedIn extends LoginDecisionState {}
 
 class LoginDecisionError extends LoginDecisionState {

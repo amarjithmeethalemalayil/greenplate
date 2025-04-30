@@ -20,3 +20,27 @@ class WrongCredentialsException extends AppException {
 class EmailAlreadyInUseException extends AppException {
   const EmailAlreadyInUseException(super.message, [super.stackTrace]);
 }
+
+class LocationServiceDisabledException extends AppException {
+  const LocationServiceDisabledException(super.message, super.stackTrace);
+}
+
+class LocationPermissionDeniedException extends AppException {
+  const LocationPermissionDeniedException(super.message, super.stackTrace);
+}
+
+class LocationPermissionPermanentlyDeniedException extends AppException {
+  const LocationPermissionPermanentlyDeniedException(super.message, super.stackTrace);
+}
+
+class LocationPermissionRestrictedException extends AppException {
+  const LocationPermissionRestrictedException(super.message, super.stackTrace);
+}
+
+class InvalidLocationDataException extends AppException {
+  const InvalidLocationDataException(super.message, super.stackTrace);
+}
+
+class LocationFetchingException extends AppException {
+  const LocationFetchingException(super.message, super.stackTrace);
+}

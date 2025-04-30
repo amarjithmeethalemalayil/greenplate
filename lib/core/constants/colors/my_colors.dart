@@ -24,4 +24,5 @@ class MyColors {
   static final infoTextColor = Colors.orange.shade800;
   static const Color orangeColor = Colors.orange;
   static final infoBoxColor = Colors.orange.shade100;
+  static const successColor = Colors.green;
 }

@@ -7,7 +7,12 @@ class AcceptDonationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: AcceptDonationBox(),
+      child: AcceptDonationBox(
+        mealTypeName: "Lunch",
+        donatorName: "Amal",
+        nameOfTheFood: "Pizza",
+        distance: "4",
+      ),
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/route/recipe_detail_view_page_navigator.dart';
 import 'package:green_plate/core/widgets/common_loading.dart';
-import 'package:green_plate/core/widgets/recipe_box.dart';
+import 'package:green_plate/features/home/presentation/widgets/recipe_box.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:green_plate/features/home/presentation/bloc/recipe_bloc.dart';
 import 'package:green_plate/features/home/presentation/config/tabbar_list.dart';

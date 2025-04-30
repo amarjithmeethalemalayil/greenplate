@@ -6,7 +6,7 @@ class DeleteFavRecipe {
     final FetchFavRecipesRepository favRecipesRepository;
   DeleteFavRecipe(this.favRecipesRepository);
 
-  Future<Either<Failure, void>> call(String docId) async {
-    return favRecipesRepository.deleteFavRecipe(docId);
+  Future<Either<Failure, void>> call(String docId,String userId) async {
+    return favRecipesRepository.deleteFavRecipe(docId,userId);
   }
 }

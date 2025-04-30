@@ -1,0 +1,2 @@
+/Users/amar/Projects/Personal/green_plate/android/app/.cxx/Debug/1hr6h3y3/x86_64/CMakeFiles/edit_cache.dir
+/Users/amar/Projects/Personal/green_plate/android/app/.cxx/Debug/1hr6h3y3/x86_64/CMakeFiles/rebuild_cache.dir

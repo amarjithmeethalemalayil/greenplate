@@ -13,9 +13,18 @@ class FavouritePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<FavRecipesBloc>(context).add(FetchFavRecipesEvent());
+    context.read<FavRecipesBloc>().add(FetchFavRecipesEvent());
     return Scaffold(
-      appBar: CommonAppBar(title: "Favourite"),
+      appBar: CommonAppBar(
+        title: "Favourite",
+        actions: [
+          IconButton(
+            onPressed: () =>
+                context.read<FavRecipesBloc>().add(FetchFavRecipesEvent()),
+            icon: Icon(Icons.replay_outlined),
+          ),
+        ],
+      ),
       body: BlocBuilder<FavRecipesBloc, FavRecipesState>(
         builder: (context, state) {
           if (state is FavRecipesLoading) {

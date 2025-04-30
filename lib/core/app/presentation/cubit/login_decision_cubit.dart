@@ -14,7 +14,7 @@ class LoginDecisionCubit extends Cubit<LoginDecisionState> {
       if (isLoggedIn) {
         emit(AlreadyLoggedIn());
       } else {
-        emit(LoginDecisionInitial());
+        emit(NotLoggedIn());
       }
     } catch (e) {
       emit(LoginDecisionError('Error checking login status: $e'));

@@ -35,7 +35,7 @@ class RecipeBox extends StatelessWidget {
                   top: 66.h,
                   left: 10.w,
                   right: 10.w,
-                  bottom: 10.h,
+                  bottom: 20.h,
                 ),
                 decoration: BoxDecoration(
                   color: MyColors.recipeBoxColor,

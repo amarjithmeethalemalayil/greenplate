@@ -25,10 +25,16 @@ import 'package:green_plate/features/auth/domain/usecases/save_user.dart';
 import 'package:green_plate/features/auth/domain/usecases/sign_up.dart';
 import 'package:green_plate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
+import 'package:green_plate/features/donate/data/datasource/donation_remote_datasource.dart';
+import 'package:green_plate/features/donate/data/repository/donation_repository_impl.dart';
+import 'package:green_plate/features/donate/domain/usecase/fetch_location.dart';
+import 'package:green_plate/features/donate/presentation/bloc/donation_bloc.dart';
 import 'package:green_plate/features/donate/presentation/cubit/donate_tabbar_cubit.dart';
+import 'package:green_plate/features/donate/presentation/cubit/meal_type_cubit.dart';
 import 'package:green_plate/features/favourite/data/datasource/fetch_fav_recipes_remote_data_source.dart';
 import 'package:green_plate/features/favourite/data/repository/fetch_fav_recipes_repository_impl.dart';
 import 'package:green_plate/features/favourite/domain/usecase/delete_fav_recipe.dart';
+import 'package:green_plate/features/favourite/domain/usecase/fetch_current_userid.dart';
 import 'package:green_plate/features/favourite/domain/usecase/fetch_fav_recipes.dart';
 import 'package:green_plate/features/favourite/presentation/bloc/fav_recipes_bloc.dart';
 import 'package:green_plate/features/home/data/datasources/fetch_name_local_datasource.dart';
@@ -39,7 +45,7 @@ import 'package:green_plate/features/home/domain/usecases/get_recipes.dart';
 import 'package:green_plate/features/home/presentation/bloc/recipe_bloc.dart';
 import 'package:green_plate/features/home/presentation/cubit/tab_bar_cubit.dart';
 import 'package:green_plate/features/recipe_detail_view/data/datasources/detail_recipe_remote_data_source.dart';
-import 'package:green_plate/features/recipe_detail_view/data/datasources/fetch_userid_local_datasource.dart';
+import 'package:green_plate/core/datasource/fetch_userid_local_datasource.dart';
 import 'package:green_plate/features/recipe_detail_view/data/repository/fetch_detail_recipe_repository_impl.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/usecase/fetch_userid.dart';
 import 'package:green_plate/features/recipe_detail_view/domain/usecase/get_datail_recipe.dart';
@@ -52,6 +58,7 @@ import 'package:green_plate/features/search_dish/domain/usecase/search_dish.dart
 import 'package:green_plate/features/search_dish/presentation/bloc/search_recipe_bloc.dart';
 import 'package:green_plate/firebase_options.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -200,6 +207,10 @@ class MyApp extends StatelessWidget {
                   FetchFavRecipesRepositoryImpl(
                     FetchFavRecipesRemoteDataSourceImpl(
                       db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
                     ),
                   ),
                 ),
@@ -207,6 +218,21 @@ class MyApp extends StatelessWidget {
                   FetchFavRecipesRepositoryImpl(
                     FetchFavRecipesRemoteDataSourceImpl(
                       db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                FetchCurrentUserid(
+                  FetchFavRecipesRepositoryImpl(
+                    FetchFavRecipesRemoteDataSourceImpl(
+                      db: db,
+                      auth: auth,
+                    ),
+                    FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
                     ),
                   ),
                 ),
@@ -246,6 +272,18 @@ class MyApp extends StatelessWidget {
               ),
             ),
             BlocProvider(create: (context) => DonateTabbarCubit()),
+            BlocProvider(create: (context) => MealTypeCubit()),
+            BlocProvider(
+              create: (context) => DonationBloc(
+                FetchLocation(
+                  DonationRepositoryImpl(
+                    remoteDatasource: DonationRemoteDatasourceImpl(
+                      Location(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
           child: MaterialApp(
             title: 'Green Plate',

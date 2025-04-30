@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
 
-class DonationSubmitBtn extends StatelessWidget {
+class DonationPageBtn extends StatelessWidget {
   final VoidCallback? onPressed;
-  const DonationSubmitBtn({super.key, this.onPressed});
+  final String buttonName;
+  const DonationPageBtn({super.key, this.onPressed, required this.buttonName});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class DonationSubmitBtn extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            "Submit Donation",
+            buttonName,
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,
