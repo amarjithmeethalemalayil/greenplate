@@ -1,28 +1,23 @@
-part of 'donation_bloc.dart';
-
-@immutable
-sealed class DonationEvent {}
-
-class FetchLocationEvent extends DonationEvent {}
-
-class DonateFood extends DonationEvent {
-  final String? donatorId;
+class DonationEntity {
+  final String donatorId;
+  final String donatorName;
   final String mealType;
   final String foodName;
   final String pickupAddress;
   final int contactNumber;
   final double longitude;
   final double latitude;
+  final bool isSomeOneIntrested;
 
-  DonateFood({
-    this.donatorId,
+  DonationEntity({
+    required this.donatorId,
+    required this.donatorName,
     required this.mealType,
     required this.foodName,
     required this.pickupAddress,
     required this.contactNumber,
     required this.longitude,
     required this.latitude,
+    required this.isSomeOneIntrested,
   });
 }
-
-class GetDonations extends DonationEvent{}

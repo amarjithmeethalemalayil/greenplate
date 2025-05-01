@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
 
 class InfoBox extends StatelessWidget {
-  const InfoBox({super.key});
+  final String message;
+  const InfoBox({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class InfoBox extends StatelessWidget {
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
-              "You can only Donate food from your current location",
+              message,
               style: TextStyle(
                 fontSize: 13.sp,
                 color: MyColors.infoTextColor,

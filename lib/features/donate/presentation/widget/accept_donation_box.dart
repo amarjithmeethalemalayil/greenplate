@@ -7,14 +7,12 @@ class AcceptDonationBox extends StatelessWidget {
   final String mealTypeName;
   final String donatorName;
   final String nameOfTheFood;
-  final String distance;
 
   const AcceptDonationBox({
     super.key,
     required this.mealTypeName,
     required this.donatorName,
     required this.nameOfTheFood,
-    required this.distance,
   });
 
   @override
@@ -87,7 +85,7 @@ class AcceptDonationBox extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 10.w),
-                  _buildLocationSeation(distance),
+                  _buildLocationSeation(),
                 ],
               ),
               SizedBox(height: 20.h),
@@ -101,38 +99,25 @@ class AcceptDonationBox extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSeation(String distance) {
-    return Column(
-      spacing: 8.h,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: MyColors.whiteColor,
-            borderRadius: BorderRadius.circular(12.r),
-            boxShadow: [
-              BoxShadow(
-                color: MyColors.shadowColor,
-                blurRadius: 4,
-                offset: Offset(2, 2),
-              ),
-            ],
+  Widget _buildLocationSeation() {
+    return Container(
+      decoration: BoxDecoration(
+        color: MyColors.whiteColor,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: [
+          BoxShadow(
+            color: MyColors.shadowColor,
+            blurRadius: 4,
+            offset: Offset(2, 2),
           ),
-          padding: EdgeInsets.all(10.sp),
-          child: Icon(
-            Icons.location_on,
-            size: 30.sp,
-            color: MyColors.urlColor,
-          ),
-        ),
-        Text(
-          "$distance Km",
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w600,
-            color: MyColors.blackColor,
-          ),
-        ),
-      ],
+        ],
+      ),
+      padding: EdgeInsets.all(10.sp),
+      child: Icon(
+        Icons.location_on,
+        size: 30.sp,
+        color: MyColors.urlColor,
+      ),
     );
   }
 }

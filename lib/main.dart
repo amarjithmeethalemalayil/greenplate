@@ -27,7 +27,11 @@ import 'package:green_plate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:green_plate/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:green_plate/features/donate/data/datasource/donation_remote_datasource.dart';
 import 'package:green_plate/features/donate/data/repository/donation_repository_impl.dart';
+import 'package:green_plate/features/donate/domain/usecase/donate_food_to_others.dart';
+import 'package:green_plate/features/donate/domain/usecase/fetch_donator_name.dart';
 import 'package:green_plate/features/donate/domain/usecase/fetch_location.dart';
+import 'package:green_plate/features/donate/domain/usecase/fetch_userid.dart';
+import 'package:green_plate/features/donate/domain/usecase/get_donation.dart';
 import 'package:green_plate/features/donate/presentation/bloc/donation_bloc.dart';
 import 'package:green_plate/features/donate/presentation/cubit/donate_tabbar_cubit.dart';
 import 'package:green_plate/features/donate/presentation/cubit/meal_type_cubit.dart';
@@ -275,10 +279,63 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (context) => MealTypeCubit()),
             BlocProvider(
               create: (context) => DonationBloc(
-                FetchLocation(
+                fetchLocation: FetchLocation(
                   DonationRepositoryImpl(
                     remoteDatasource: DonationRemoteDatasourceImpl(
-                      Location(),
+                      location: Location(),
+                      db: db,
+                      auth: auth,
+                    ),
+                    fetchUseridLocalDatasource: FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                donateFood: DonateFoodToOthers(
+                  DonationRepositoryImpl(
+                    remoteDatasource: DonationRemoteDatasourceImpl(
+                      location: Location(),
+                      db: db,
+                      auth: auth,
+                    ),
+                    fetchUseridLocalDatasource: FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                fetchUserid: FetchDonatorId(
+                  DonationRepositoryImpl(
+                    remoteDatasource: DonationRemoteDatasourceImpl(
+                      location: Location(),
+                      db: db,
+                      auth: auth,
+                    ),
+                    fetchUseridLocalDatasource: FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                getDonation: GetDonation(
+                  DonationRepositoryImpl(
+                    remoteDatasource: DonationRemoteDatasourceImpl(
+                      location: Location(),
+                      db: db,
+                      auth: auth,
+                    ),
+                    fetchUseridLocalDatasource: FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
+                    ),
+                  ),
+                ),
+                fetchDonatorName: FetchDonatorName(
+                  DonationRepositoryImpl(
+                    remoteDatasource: DonationRemoteDatasourceImpl(
+                      location: Location(),
+                      db: db,
+                      auth: auth,
+                    ),
+                    fetchUseridLocalDatasource: FetchUseridLocalDatasourceImpl(
+                      LocalDataService(),
                     ),
                   ),
                 ),
