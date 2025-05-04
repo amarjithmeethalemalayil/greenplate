@@ -34,9 +34,9 @@ class FetchDetailRecipeRepositoryImpl implements FetchDetailRecipeRepository {
     RecipeEntity recipe,
     String userId,
   ) async {
-    final _recipe = RecipeModel.fromEntity(recipe);
+    final recipeModel = RecipeModel.fromEntity(recipe);
     try {
-      final res = await remoteDataSource.saveRecipeToFIrestore(_recipe, userId);
+      final res = await remoteDataSource.saveRecipeToFIrestore(recipeModel, userId);
       return right(res);
     } on ServerException catch (e) {
       return left(ServerFailure(e.message));

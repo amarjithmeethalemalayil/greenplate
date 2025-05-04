@@ -1,4 +1,5 @@
 class DonationEntity {
+  String? donationDocId;
   final String donatorId;
   final String donatorName;
   final String mealType;
@@ -7,7 +8,7 @@ class DonationEntity {
   final int contactNumber;
   final double longitude;
   final double latitude;
-  final bool isSomeOneIntrested;
+  final bool donationCompleted;
 
   DonationEntity({
     required this.donatorId,
@@ -18,6 +19,7 @@ class DonationEntity {
     required this.contactNumber,
     required this.longitude,
     required this.latitude,
-    required this.isSomeOneIntrested,
+    required this.donationCompleted,
+    this.donationDocId,
   });
 }

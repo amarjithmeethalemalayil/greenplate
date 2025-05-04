@@ -7,6 +7,7 @@ import 'package:green_plate/features/donate/domain/usecase/fetch_donator_name.da
 import 'package:green_plate/features/donate/domain/usecase/fetch_location.dart';
 import 'package:green_plate/features/donate/domain/usecase/fetch_userid.dart';
 import 'package:green_plate/features/donate/domain/usecase/get_donation.dart';
+import 'package:green_plate/features/donate/domain/usecase/donation_completed.dart';
 
 part 'donation_event.dart';
 part 'donation_state.dart';
@@ -17,6 +18,7 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
   final FetchDonatorId fetchUserid;
   final GetDonation getDonation;
   final FetchDonatorName fetchDonatorName;
+  final DonationCompleted donationCompleted;
 
   DonationBloc({
     required this.fetchLocation,
@@ -24,10 +26,12 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
     required this.fetchUserid,
     required this.getDonation,
     required this.fetchDonatorName,
+    required this.donationCompleted,
   }) : super(DonationInitial()) {
     on<FetchLocationEvent>(_onFetchLocation);
     on<DonateFood>(_onSubmitDonation);
     on<GetDonations>(_fetchDonations);
+    on<PressDonationComplete>(_completeDonation);
   }
 
   Future<void> _onFetchLocation(
@@ -58,10 +62,7 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
     final donatorNameResult = await fetchDonatorName(userId);
     final donatorName = donatorNameResult.fold(
       (failure) => 'unknown',
-      (name) {
-        print("user name is : $name");
-        return name;
-      },
+      (name) => name,
     );
     final donation = DonationEntity(
       donatorId: userId,
@@ -72,7 +73,7 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
       contactNumber: event.contactNumber,
       longitude: event.longitude,
       latitude: event.latitude,
-      isSomeOneIntrested: false,
+      donationCompleted: false,
     );
     final result = await donateFood(donation);
     result.fold(
@@ -110,5 +111,31 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
         );
       },
     );
+  }
+
+  Future<void> _completeDonation(
+    PressDonationComplete event,
+    Emitter<DonationState> emit,
+  ) async {
+    final userIdResult = await fetchUserid();
+    final userId = userIdResult.fold(
+      (failure) => 'unknown',
+      (id) => id,
+    );
+    final locationResult = await fetchLocation();
+    if (locationResult.isLeft()) {
+      final failure = locationResult.fold((f) => f, (_) => null)!;
+      emit(DonationFetchError(failure.message));
+      return;
+    }
+    final success = locationResult.fold((_) => null, (s) => s)!;
+    await donationCompleted(
+      donation: event.donationEntity,
+      currentLatitude: success.latitude,
+      currentLongitude: success.longitude,
+      currentUserId: userId,
+    );
+
+    emit(DonationRequested());
   }
 }

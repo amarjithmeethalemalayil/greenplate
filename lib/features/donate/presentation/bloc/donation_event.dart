@@ -25,4 +25,12 @@ class DonateFood extends DonationEvent {
   });
 }
 
-class GetDonations extends DonationEvent{}
+class GetDonations extends DonationEvent {}
+
+class PressDonationComplete extends DonationEvent {
+  final DonationEntity donationEntity;
+
+  PressDonationComplete({
+    required this.donationEntity,
+  });
+}

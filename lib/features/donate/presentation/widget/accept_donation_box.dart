@@ -7,12 +7,17 @@ class AcceptDonationBox extends StatelessWidget {
   final String mealTypeName;
   final String donatorName;
   final String nameOfTheFood;
+  final Function()? onPressedIntrest, viewMorePressed;
+  final Color? btnColor;
 
   const AcceptDonationBox({
     super.key,
     required this.mealTypeName,
     required this.donatorName,
     required this.nameOfTheFood,
+    this.onPressedIntrest,
+    this.btnColor,
+    this.viewMorePressed,
   });
 
   @override
@@ -72,13 +77,16 @@ class AcceptDonationBox extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 10.h),
-                        Text(
-                          "view all details",
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: MyColors.blackColor,
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.w500,
+                        InkWell(
+                          onTap: viewMorePressed,
+                          child: Text(
+                            "view all details",
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: MyColors.blackColor,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         )
                       ],
@@ -90,7 +98,9 @@ class AcceptDonationBox extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               DonationPageBtn(
-                buttonName: "Interest",
+                buttonName: "Donation Complete",
+                onPressed: onPressedIntrest,
+                btnColor: btnColor,
               ),
             ],
           ),

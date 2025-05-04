@@ -12,4 +12,10 @@ abstract class DonationRepository {
     String userId,
   );
   Future<Either<Failure, String>> fetchUserName(String uid);
+  Future<Either<Failure, void>> donationComplete(
+    double currentLatitude,
+    double currentLongitude,
+    DonationEntity donation,
+    String currentUserId,
+  );
 }

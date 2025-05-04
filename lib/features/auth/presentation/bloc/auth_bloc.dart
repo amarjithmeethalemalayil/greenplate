@@ -33,6 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (user) {
         saveUserData(user);
         emit(LoginSuccess());
+        emit(AuthLoading());
       },
     );
   }
@@ -47,6 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) => emit(AuthError(failure.toString())),
       (user) {
         emit(SignUpSuccess());
+        emit(AuthInitial());
       },
     );
   }

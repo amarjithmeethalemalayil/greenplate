@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:green_plate/core/route/app_router.dart';
+import 'package:green_plate/core/utils/app_snackbar.dart';
 import 'package:green_plate/core/widgets/common_loading.dart';
 import 'package:green_plate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:green_plate/features/auth/presentation/pages/login_page.dart';
 import 'package:green_plate/features/auth/presentation/widget/app_logo.dart';
 import 'package:green_plate/features/auth/presentation/widget/auth_card.dart';
+import 'package:green_plate/features/auth/presentation/widget/default_view.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -15,26 +18,31 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final emailController = TextEditingController();
-  final nameController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleSignup(BuildContext context) {
-    context.read<AuthBloc>().add(
-          SignUpRequested(
-            name: nameController.text.trim(),
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-          ),
-        );
+  void _handleSignup() {
+    if (_formKey.currentState!.validate()) {
+      final name = _nameController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+      final signupUsecase = SignUpRequested(
+        name: name,
+        email: email,
+        password: password,
+      );
+      context.read<AuthBloc>().add(signupUsecase);
+    }
   }
 
   @override
@@ -43,61 +51,57 @@ class _SignupPageState extends State<SignupPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            AppSnackbar.show(context, state.message);
           }
           if (state is SignUpSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Account Created. Now login")),
-            );
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginPage()),
-            );
+            AppSnackbar.show(context, "Account Created. Now login");
+            context.go(AppRouter.login);
           }
         },
         builder: (context, state) {
           if (state is AuthLoading) {
             return CommonLoading();
+          } else if (state is AuthInitial) {
+            return _buildSignupView();
           }
-          return Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-              vertical: 20.h,
-            ),
+          return DefaultView(onPressed: () => context.pop());
+        },
+      ),
+    );
+  }
+
+  Widget _buildSignupView() {
+    final size = MediaQuery.of(context).size;
+    return Form(
+      key: _formKey,
+      child: SafeArea(
+        child: SizedBox(
+          height: size.height,
+          child: SingleChildScrollView(
             child: Center(
-              child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                  vertical: 20.h,
+                ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     AppLogo(),
-                    SizedBox(height: 30.h),
+                    SizedBox(height: 40.h),
                     AuthCard(
-                      nameController: nameController,
-                      emailController: emailController,
-                      passwordController: passwordController,
                       isSignUp: true,
-                      onPressed: () {
-                        if (nameController.text.isEmpty ||
-                            emailController.text.isEmpty ||
-                            passwordController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Fill all the fields")),
-                          );
-                          return;
-                        } else {
-                          _handleSignup(context);
-                        }
-                      },
-                      route: LoginPage(),
+                      nameController: _nameController,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      route: AppRouter.login,
+                      onPressed: () => _handleSignup(),
                     ),
                   ],
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

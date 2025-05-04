@@ -42,7 +42,15 @@ final class DonationFetched extends DonationState {
   DonationFetched(this.donation);
 }
 
-final class DonationFetchError extends DonationState{
+final class DonationsFectchError extends DonationState{
+  final String message;
+
+  DonationsFectchError(this.message);
+}
+
+final class DonationRequested extends DonationState{}
+
+final class DonationFetchError extends DonationState {
   final String message;
 
   DonationFetchError(this.message);

@@ -5,7 +5,14 @@ import 'package:green_plate/core/constants/colors/my_colors.dart';
 class DonationPageBtn extends StatelessWidget {
   final VoidCallback? onPressed;
   final String buttonName;
-  const DonationPageBtn({super.key, this.onPressed, required this.buttonName});
+  final Color? btnColor;
+
+  const DonationPageBtn({
+    super.key,
+    this.onPressed,
+    required this.buttonName,
+    this.btnColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,7 @@ class DonationPageBtn extends StatelessWidget {
         height: 55.h,
         width: 315.w,
         decoration: BoxDecoration(
-          color: MyColors.primaryColor,
+          color: btnColor ?? MyColors.primaryColor,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Center(

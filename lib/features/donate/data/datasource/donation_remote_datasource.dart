@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:green_plate/core/constants/keys/keys.dart';
@@ -7,6 +6,7 @@ import 'package:green_plate/core/error/app_exception.dart';
 import 'package:green_plate/features/donate/data/model/donation_model.dart';
 import 'package:green_plate/features/donate/data/model/location_model.dart';
 import 'package:location/location.dart';
+//import 'package:url_launcher/url_launcher.dart';
 
 abstract interface class DonationRemoteDatasource {
   Future<LocationModel> getCurrentLocation();
@@ -16,6 +16,16 @@ abstract interface class DonationRemoteDatasource {
     String userId,
   );
   Future<String> fetchDonatorName(String uid);
+  Future<void> donationCompleted(
+    double currentLatitude,
+    double currentLongitude,
+    DonationModel donation,
+    String currentUserId,
+  );
+  // Future<void> launchGoogleMapsDirection(
+  //   double latitude,
+  //   double longitude,
+  // );
 }
 
 class DonationRemoteDatasourceImpl implements DonationRemoteDatasource {
@@ -86,7 +96,9 @@ class DonationRemoteDatasourceImpl implements DonationRemoteDatasource {
       if (userDocId == null || userDocId.isEmpty) {
         return false;
       }
-      await db.collection(Keys.donationCollection).doc().set(donation.toMap());
+      final docRef = db.collection(Keys.donationCollection).doc();
+      donation.donationDocId = docRef.id;
+      await docRef.set(donation.toMap());
       return true;
     } on FirebaseException catch (e) {
       throw ServerException('Failed to save recipe to Firestore: ${e.message}');
@@ -111,7 +123,8 @@ class DonationRemoteDatasourceImpl implements DonationRemoteDatasource {
       final donatorId = data['donatorId'];
       final lat = data['latitude'];
       final lng = data['longitude'];
-      if (donatorId != userId) {
+      final donationCompleted = data['donationCompleted'] ?? false;
+      if (donatorId != userId && donationCompleted == false) {
         final distance = _calculateDistance(
           userLocation.latitude,
           userLocation.longitude,
@@ -160,7 +173,7 @@ class DonationRemoteDatasourceImpl implements DonationRemoteDatasource {
         final collection = db.collection(Keys.accountsCollection);
         final snapshot = await collection.doc(userDocId).get();
         if (snapshot.exists) {
-          final data = snapshot.data() as Map<String, dynamic>?;
+          final data = snapshot.data();
           final userName = data?['name'] ?? '';
           return userName;
         } else {
@@ -177,4 +190,60 @@ class DonationRemoteDatasourceImpl implements DonationRemoteDatasource {
       );
     }
   }
+
+  @override
+  Future<void> donationCompleted(
+    double currentLatitude,
+    double currentLongitude,
+    DonationModel donation,
+    String currentUserId,
+  ) async {
+    try {
+      final userId =
+          currentUserId == 'unknown' ? auth.currentUser?.uid : currentUserId;
+      if (userId == null || userId.isEmpty) {
+        throw const ServerException('User ID is not available.');
+      }
+      await db
+          .collection(Keys.donationCollection)
+          .doc(donation.donationDocId)
+          .update({
+        'donationCompleted': true,
+      });
+      await db
+          .collection(Keys.accountsCollection)
+          .doc(userId)
+          .collection(Keys.acceptedDonation)
+          .doc()
+          .set(donation.toMap());
+      await db
+          .collection(Keys.accountsCollection)
+          .doc(donation.donatorId)
+          .collection(Keys.myDonations)
+          .doc()
+          .set(
+            donation.toMap(),
+          );
+    } on FirebaseException catch (e) {
+      throw ServerException('Failed to update interest status: ${e.message}');
+    } catch (e, st) {
+      throw ServerException(
+        'An error occurred while updating interest status: ${e.toString()}',
+        st,
+      );
+    }
+  }
+  
+  // @override
+  // Future<void> launchGoogleMapsDirection(double latitude, double longitude) async {
+  // final Uri googleMapsUri = Uri.parse(
+  //   'https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=driving',
+  // );
+
+  // if (await canLaunchUrl(googleMapsUri)) {
+  //   await launchUrl(googleMapsUri, mode: LaunchMode.externalApplication);
+  // } else {
+  //   throw 'Could not launch Google Maps.';
+  // }
+  // }
 }

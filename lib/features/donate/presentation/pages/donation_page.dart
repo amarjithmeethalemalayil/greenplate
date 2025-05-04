@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green_plate/core/utils/app_snackbar.dart';
 import 'package:green_plate/features/donate/presentation/bloc/donation_bloc.dart';
 import 'package:green_plate/features/donate/presentation/config/meal_type_list.dart';
+import 'package:green_plate/core/utils/validator.dart';
 import 'package:green_plate/features/donate/presentation/cubit/meal_type_cubit.dart';
 import 'package:green_plate/features/donate/presentation/widget/donation_page_btn.dart';
 import 'package:green_plate/features/donate/presentation/widget/donation_textfield.dart';
@@ -40,18 +41,19 @@ class _DonationPageState extends State<DonationPage> {
     if (longitude == null || latitude == null) {
       AppSnackbar.show(context, 'Please fetch your location first');
       return;
+    } else if (mealType.isNotEmpty) {
+      final contactNumber = contactNumberController.text.trim();
+      context.read<DonationBloc>().add(
+            DonateFood(
+              mealType: mealType,
+              foodName: foodNameController.text.trim(),
+              pickupAddress: addressController.text.trim(),
+              contactNumber: int.tryParse(contactNumber) ?? 0,
+              longitude: longitude!,
+              latitude: latitude!,
+            ),
+          );
     }
-    context.read<DonationBloc>().add(
-          DonateFood(
-            mealType: mealType,
-            foodName: foodNameController.text.trim(),
-            pickupAddress: addressController.text.trim(),
-            contactNumber:
-                int.tryParse(contactNumberController.text.trim()) ?? 0,
-            longitude: longitude!,
-            latitude: latitude!,
-          ),
-        );
   }
 
   donationCompleted() {
@@ -115,8 +117,7 @@ class _DonationPageState extends State<DonationPage> {
                 controller: foodNameController,
                 label: "Food name",
                 hintText: "Name of the food",
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Required field' : null,
+                validator: Validators.validateFoodName,
               ),
               SizedBox(height: 6.h),
               DonationTextfield(
@@ -124,8 +125,7 @@ class _DonationPageState extends State<DonationPage> {
                 label: "Your pickup address",
                 hintText: "Your pickup address",
                 maxLine: 4,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Required field' : null,
+                validator: Validators.validateAddress,
               ),
               SizedBox(height: 6.h),
               DonationTextfield(
@@ -133,11 +133,7 @@ class _DonationPageState extends State<DonationPage> {
                 label: "Contact number",
                 hintText: "Contact number",
                 keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Required field';
-                  if (int.tryParse(value!) == null) return 'Enter valid number';
-                  return null;
-                },
+                validator: Validators.validatePhoneNumber,
               ),
               SizedBox(height: 10.h),
               BlocBuilder<DonationBloc, DonationState>(

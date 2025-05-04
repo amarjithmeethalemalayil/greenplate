@@ -99,4 +99,27 @@ class DonationRepositoryImpl implements DonationRepository {
       ));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> donationComplete(
+    double currentLatitude,
+    double currentLongitude,
+    DonationEntity donation,
+    String currentUserId,
+  ) async {
+    try {
+      final donationModel = DonationModel.fromEntity(donation);
+      await remoteDatasource.donationCompleted(
+        currentLatitude,
+        currentLongitude,
+        donationModel,
+        currentUserId,
+      );
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(UnknownFailure(e.message));
+    } catch (e) {
+      return Left(UnknownFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
 }

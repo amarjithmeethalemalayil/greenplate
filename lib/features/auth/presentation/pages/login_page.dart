@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:green_plate/core/route/app_router.dart';
+import 'package:green_plate/core/utils/app_snackbar.dart';
 import 'package:green_plate/core/widgets/common_loading.dart';
 import 'package:green_plate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:green_plate/features/auth/presentation/pages/signup_page.dart';
 import 'package:green_plate/features/auth/presentation/widget/app_logo.dart';
 import 'package:green_plate/features/auth/presentation/widget/auth_card.dart';
-import 'package:green_plate/features/bottom_nav/presentation/pages/bottom_nav.dart';
+import 'package:green_plate/features/auth/presentation/widget/default_view.dart';
+import 'package:restart_app/restart_app.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,23 +19,24 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleSignIn(BuildContext context) {
-    context.read<AuthBloc>().add(
-          LoginRequested(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-          ),
-        );
+  _handleSignIn() {
+    if (_formKey.currentState!.validate()) {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+      final loginEvent = LoginRequested(email: email, password: password);
+      context.read<AuthBloc>().add(loginEvent);
+    }
   }
 
   @override
@@ -41,56 +45,60 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            AppSnackbar.show(context, state.message);
           }
           if (state is LoginSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const BottomNav()),
-            );
+            context.go(AppRouter.home);
           }
         },
         builder: (context, state) {
           if (state is AuthLoading) {
             return CommonLoading();
+          } else if (state is AuthInitial) {
+            return _buildLoginView();
           }
-          return Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-              vertical: 20.h,
-            ),
+          return DefaultView(onPressed: () async => await Restart.restartApp());
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoginView() {
+    final size = MediaQuery.of(context).size;
+    return Form(
+      key: _formKey,
+      child: SafeArea(
+        child: SizedBox(
+          height: size.height,
+          child: SingleChildScrollView(
             child: Center(
-              child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                  vertical: 20.h,
+                ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    _commonSpace(),
                     AppLogo(),
-                    SizedBox(height: 30.h),
+                    _commonSpace(),
                     AuthCard(
-                      emailController: emailController,
-                      passwordController: passwordController,
-                      onPressed: () {
-                        if (emailController.text.isEmpty ||
-                            passwordController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Fill all the fields")),
-                          );
-                          return;
-                        } else {
-                          _handleSignIn(context);
-                        }
-                      },
-                      route: SignupPage(),
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      route: AppRouter.signUp,
+                      onPressed: () => _handleSignIn(),
                     ),
                   ],
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
+  }
+
+  Widget _commonSpace() {
+    return SizedBox(height: 60.h);
   }
 }

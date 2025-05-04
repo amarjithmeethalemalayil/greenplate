@@ -12,6 +12,7 @@ import 'package:green_plate/features/home/presentation/widgets/home_banner.dart'
 import 'package:green_plate/features/home/presentation/widgets/home_header.dart';
 import 'package:green_plate/features/home/presentation/widgets/home_tabbar.dart';
 import 'package:green_plate/features/home/presentation/widgets/recipe_search_textfield.dart';
+import 'package:green_plate/features/profile/presentation/pages/profile_page.dart';
 import 'package:green_plate/features/recipe_detail_view/presentation/pages/recipe_detail_view_page.dart';
 import 'package:green_plate/features/search_dish/presentation/pages/search_page.dart';
 
@@ -72,12 +73,18 @@ class _HomePageState extends State<HomePage>
             children: [
               BlocBuilder<RecipeBloc, RecipeState>(
                 builder: (context, state) {
-                  if(state is NameFetched){
-                    return HomeHeader(username: state.name);
-                  } else if(state is RecipeLoading){
+                  if (state is NameFetched) {
+                    return HomeHeader(
+                      username: state.name,
+                      profilePressed: goToProfile(),
+                    );
+                  } else if (state is RecipeLoading) {
                     return HomeHeader(username: "Loading");
                   }
-                  return HomeHeader(username: "Amar");
+                  return HomeHeader(
+                    username: "Amar",
+                    profilePressed: () => goToProfile(),
+                  );
                 },
               ),
               SizedBox(height: 30.h),
@@ -145,5 +152,10 @@ class _HomePageState extends State<HomePage>
         ),
       ),
     );
+  }
+
+  goToProfile() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => ProfilePage()));
   }
 }

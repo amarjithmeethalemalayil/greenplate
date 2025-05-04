@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:green_plate/core/constants/colors/my_colors.dart';
+import 'package:green_plate/core/utils/validator.dart';
 import 'package:green_plate/features/auth/presentation/widget/auth_button.dart';
 import 'package:green_plate/features/auth/presentation/widget/auth_tect_field.dart';
 
@@ -11,7 +13,7 @@ class AuthCard extends StatelessWidget {
   final TextEditingController? nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  final Widget route;
+  final String route;
 
   const AuthCard({
     super.key,
@@ -48,6 +50,7 @@ class AuthCard extends StatelessWidget {
             obscureText: false,
             controller: nameController ?? TextEditingController(),
             hintText: "Name",
+            validator: Validators.validateName,
           ),
           SizedBox(height: 20.h),
         ],
@@ -55,12 +58,14 @@ class AuthCard extends StatelessWidget {
           obscureText: false,
           controller: emailController,
           hintText: "Email",
+          validator: Validators.validateEmail,
         ),
         SizedBox(height: 20.h),
         AuthTectField(
           obscureText: true,
           controller: passwordController,
           hintText: "Password",
+          validator: Validators.validatePassword,
         ),
         SizedBox(height: 30.h),
         AuthButton(
@@ -99,7 +104,7 @@ class AuthCard extends StatelessWidget {
   Widget _buildRichText({
     required bool isSignUp,
     required BuildContext context,
-    required Widget route,
+    required String route,
   }) {
     return Align(
       alignment: AlignmentDirectional.center,
@@ -120,14 +125,7 @@ class AuthCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
               recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => route,
-                    ),
-                  );
-                },
+                ..onTap = () => context.push(route),
             ),
           ],
         ),

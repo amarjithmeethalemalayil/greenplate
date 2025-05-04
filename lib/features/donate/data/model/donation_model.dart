@@ -11,12 +11,14 @@ class DonationModel extends DonationEntity {
     required super.contactNumber,
     required super.longitude,
     required super.latitude,
-    required super.isSomeOneIntrested,
+    required super.donationCompleted,
+    super.donationDocId,
   });
 
   factory DonationModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return DonationModel(
+      donationDocId: data['donationDocId'] ?? '',
       donatorId: data['donatorId'] ?? '',
       donatorName: data['donatorName'] ?? '',
       mealType: data['mealType'] ?? '',
@@ -25,7 +27,7 @@ class DonationModel extends DonationEntity {
       contactNumber: data['contactNumber'] ?? '',
       longitude: data['longitude']?.toDouble() ?? 0.0,
       latitude: data['latitude']?.toDouble() ?? 0.0,
-      isSomeOneIntrested: data['isSomeOneIntrested'] ?? false,
+      donationCompleted: data['donationCompleted'] ?? false,
     );
   }
 
@@ -39,12 +41,14 @@ class DonationModel extends DonationEntity {
       'contactNumber': contactNumber,
       'longitude': longitude,
       'latitude': latitude,
-      'isSomeOneIntrested': isSomeOneIntrested,
+      'donationCompleted': donationCompleted,
+      'donationDocId': donationDocId,
     };
   }
 
   factory DonationModel.fromEntity(DonationEntity entity) {
     return DonationModel(
+      donationDocId: entity.donationDocId,
       donatorId: entity.donatorId,
       donatorName: entity.donatorName,
       mealType: entity.mealType,
@@ -53,7 +57,7 @@ class DonationModel extends DonationEntity {
       contactNumber: entity.contactNumber,
       longitude: entity.longitude,
       latitude: entity.latitude,
-      isSomeOneIntrested: entity.isSomeOneIntrested,
+      donationCompleted: entity.donationCompleted,
     );
   }
 }

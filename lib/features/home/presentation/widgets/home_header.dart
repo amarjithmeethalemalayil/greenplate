@@ -4,10 +4,12 @@ import 'package:green_plate/core/constants/colors/my_colors.dart';
 
 class HomeHeader extends StatelessWidget {
   final String username;
+  final Function()? profilePressed;
 
   const HomeHeader({
     super.key,
     required this.username,
+    this.profilePressed,
   });
 
   @override
@@ -36,7 +38,10 @@ class HomeHeader extends StatelessWidget {
             ),
           ],
         ),
-        Icon(Icons.account_circle_rounded, size: 35.sp)
+        InkWell(
+          onTap: profilePressed,
+          child: Icon(Icons.account_circle_rounded, size: 35.sp),
+        )
       ],
     );
   }
